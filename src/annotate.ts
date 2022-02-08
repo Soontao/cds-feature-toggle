@@ -22,6 +22,7 @@ const isEnabled = (evtName: string, srv: any) => {
     }
   }
 
+  // contains the feature
   if (typeof enabledAnnotationValue === "string") {
     if (getFeatures()?.includes?.(enabledAnnotationValue)) {
       return true;
