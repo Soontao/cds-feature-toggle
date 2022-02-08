@@ -85,7 +85,13 @@
         "ignoreRequire": true,
         // put false-positive words here
         "skipWords": [
-          "javascript"
+          "javascript",
+          "req",
+          "nocheck",
+          "srv",
+          "evt",
+          "cds",
+          "camelcase"
         ]
       }
     ]

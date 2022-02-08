@@ -1,3 +1,15 @@
-export const a = 1;
+import { supportFeatureAnnotate } from "./annotate";
+import { FeatureNotEnabledError } from "./errors";
+import { featureMiddleware } from "./middlewares";
+import { getFeatures, setFeatures } from "./storage";
 
-export const b = "1";
+export const features = {
+  middleware: featureMiddleware,
+  setFeatures,
+  getFeatures,
+  FeatureNotEnabledError,
+  supportFeatureAnnotate
+};
+
+
+export default features;
