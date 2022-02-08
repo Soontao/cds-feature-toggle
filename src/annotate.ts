@@ -85,14 +85,10 @@ export const supportFeatureAnnotate = (cds: any) => {
 
           if (evt._feature_redirect !== undefined) {
             const event = evt._feature_redirect.name.match(/\w*$/)[0];
-            logger.info(`redirect event from ${evt.event} to ${event}`);
+            logger.debug(`redirect event from ${evt.event} to ${event}`);
             return srv[event]({ ...evt, event });
           }
-          // please carefully process error happens here
-          logger.info(`before ${evt?.event} ${evt?.target?.name || ""}`);
-          const rt = await next();
-          logger.info(`after ${evt?.event} ${evt?.target?.name || ""}`);
-          return rt;
+          return await next();
         });
 
       });
