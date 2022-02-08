@@ -66,6 +66,7 @@ export const supportFeatureAnnotate = (cds: any) => {
 
       service.prepend("*", (srv: any) => {
 
+        // TODO, only register handler which annotated with annotations
         srv.before("*", async (evt: any) => {
           
           const redirect = getRedirect(evt.event, srv);
