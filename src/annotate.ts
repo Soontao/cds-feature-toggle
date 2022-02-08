@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 
 import { intersection } from "@newdash/newdash/intersection";
+import { FeatureNotEnabledError } from "./errors";
 import { getFeatures } from "./storage";
 
 const isEnabled = (evtName: string, srv: any) => {
@@ -77,7 +78,7 @@ export const supportFeatureAnnotate = (cds: any) => {
             return;
           }
 
-          throw new Error(`${evt?.event} is not enabled`);
+          throw new FeatureNotEnabledError(`${evt?.event} is not enabled`);
 
         });
 
