@@ -1,13 +1,17 @@
 /* eslint-disable camelcase */
 
 import { intersection } from "@newdash/newdash/intersection";
+import {
+  ANNOTATE_KEY_ENABLED,
+  ANNOTATE_KEY_REDIRECT_TARGET,
+  CONTEXT_KEY_EVENT_REDIRECT,
+  CONTEXT_KEY_FEATURE_PROVIDER
+} from "./constants";
 import { FeatureNotEnabledError } from "./errors";
 import { DetermineContext, FeatureProvider } from "./interface";
 import { FeatureProviderContainer } from "./provider";
 
-const ANNOTATE_KEY_ENABLED = "@cds.features.enabled";
-const ANNOTATE_KEY_REDIRECT_TARGET = "@cds.features.redirect.target";
-const CONTEXT_KEY_EVENT_REDIRECT = "__feature_redirect_def";
+
 
 const annotateKeys = [ANNOTATE_KEY_ENABLED, ANNOTATE_KEY_REDIRECT_TARGET];
 
@@ -32,7 +36,7 @@ const isEnabled = async (context: DetermineContext) => {
 
   const enabledAnnotationValue = op[ANNOTATE_KEY_ENABLED];
 
-  const currentContextFeatures = await context.featureProviderContainer.getFeatures(context);
+  const currentContextFeatures = await context.featureProviderContainer.getFeatures(context.cdsContext);
 
   if (currentContextFeatures !== undefined && currentContextFeatures.length > 0) {
     // contains any features
@@ -85,23 +89,25 @@ const getRedirect = async (context: DetermineContext): Promise<any> => {
 export interface FeatureCheckResult {
   featureRelevant: boolean
   enabled: boolean
-  redirect?: any
+  redirect?: any,
+  features: Array<string>,
 }
 
 export const checkFeatureEnabled = async (context: DetermineContext): Promise<FeatureCheckResult> => {
   const featureRelevant = isFeatureRelatedDef(context);
+  const features = await context.featureProviderContainer.getFeatures(context.cdsContext);
   const redirect = await getRedirect(context);
 
   if (redirect !== undefined) {
     return {
-      featureRelevant, redirect, enabled: true
+      featureRelevant, redirect, enabled: true, features
     };
   }
 
   const enabled = await isEnabled(context);
 
   return {
-    featureRelevant, redirect, enabled
+    featureRelevant, redirect, enabled, features
   };
 
 };
@@ -126,6 +132,8 @@ export const supportFeatureAnnotate = (cds: any, ...providers: Array<FeatureProv
             cdsService: srv,
             featureProviderContainer: container
           };
+          
+          evt[CONTEXT_KEY_FEATURE_PROVIDER] = container;
 
           const checkResult = await checkFeatureEnabled(context);
 
