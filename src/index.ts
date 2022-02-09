@@ -1,14 +1,17 @@
 import { supportFeatureAnnotate } from "./annotate";
 import { FeatureNotEnabledError } from "./errors";
-import { featureMiddleware } from "./middlewares";
-import { getFeatures, setFeatures } from "./storage";
+import { CDSRequestProvider, FeatureProviderContainer } from "./provider";
+export { FeatureProvider, Features } from "./interface";
+
+export const providers = {
+  CDSRequestProvider
+};
 
 export const features = {
-  middleware: featureMiddleware,
-  setFeatures,
-  getFeatures,
   FeatureNotEnabledError,
-  supportFeatureAnnotate
+  supportFeatureAnnotate,
+  FeatureProviderContainer,
+  providers
 };
 
 
