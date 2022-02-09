@@ -68,9 +68,9 @@ const getRedirect = async (context: DetermineContext): Promise<any> => {
 
   const op = context.cdsService.operations[context.cdsContext.event];
 
-  if (op["@cds.features.redirect.target"] !== undefined) {
+  if (op[ANNOTATE_KEY_REDIRECT_TARGET] !== undefined) {
 
-    for (const target of op["@cds.features.redirect.target"]) {
+    for (const target of op[ANNOTATE_KEY_REDIRECT_TARGET]) {
       const targetEventName = target["="];
       const targetEvent = context.cdsService.operations[targetEventName];
       const targetContext = { ...context, cdsContext: { ...context.cdsContext, event: targetEventName } };
