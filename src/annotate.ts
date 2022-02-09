@@ -156,7 +156,7 @@ export const supportFeatureAnnotate = (cds: any, ...providers: Array<FeatureProv
 
         srv.on("*", async (evt: any, next: Function) => {
 
-          if (evt._feature_redirect !== undefined) {
+          if (evt[CONTEXT_KEY_EVENT_REDIRECT] !== undefined) {
             const event = evt[CONTEXT_KEY_EVENT_REDIRECT].name.match(/\w*$/)[0];
             logger.debug(`redirect event from ${evt.event} to ${event}`);
             return srv[event]({ ...evt, event });
