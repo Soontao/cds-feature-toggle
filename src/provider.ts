@@ -62,27 +62,29 @@ export class FeatureProviderContainer {
    */
   public async getFeatures(context: any, force: boolean = false): Promise<Features> {
     const key = this.#formatKey(context);
-    return this.#locks.getOrCreate(key).use(async () => {
-      if (force || !this.#cache.has(key)) {
-        const allFeaturesSet = new Set<string>();
-        const featuresList = await Promise.allSettled(
-          Array
-            .from(this.#providers)
-            .map(provider => provider.getFeatures(context))
-        );
-        for (const features of featuresList) {
-          if (features.status === "fulfilled") {
-            for (const feature of features.value) {
-              allFeaturesSet.add(feature);
+    return this.#locks
+      .getOrCreate(key)
+      .use(async () => {
+        if (force || !this.#cache.has(key)) {
+          const allFeaturesSet = new Set<string>();
+          const featuresList = await Promise.allSettled(
+            Array
+              .from(this.#providers)
+              .map(provider => provider.getFeatures(context))
+          );
+          for (const features of featuresList) {
+            if (features.status === "fulfilled") {
+              for (const feature of features.value) {
+                allFeaturesSet.add(feature);
+              }
+            } else {
+              // TODO: error log
             }
-          } else {
-            // TODO: error log
           }
+          this.#cache.set(key, Array.from(allFeaturesSet));
         }
-        this.#cache.set(key, Array.from(allFeaturesSet));
-      }
-      return this.#cache.get(key);
-    });
+        return this.#cache.get(key);
+      });
 
   }
 
