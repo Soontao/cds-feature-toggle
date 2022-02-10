@@ -45,14 +45,24 @@ export class FeatureProviderContainer {
     }
   }
 
+  #formatKey(context: any) {
+    // cache by tenant & user id
+    return JSON.stringify({
+      user: context?.user?.id ?? "unknown",
+      tenant: context?.tenant ?? "unknown"
+    });
+  }
+
   public async getFeatures(context: any): Promise<Features> {
     // use 'request id' and 'user id' as cache key
-    const key = (context?.id ?? "unknown") + "-" + (context?.user?.id ?? "unknown");
+    const key = this.#formatKey(context);
     return this.#locks.getOrCreate(key).use(async () => {
       if (!this.#cache.has(key)) {
         const allFeaturesSet = new Set<string>();
         const featuresList = await Promise.allSettled(
-          Array.from(this.#providers).map(provider => provider.getFeatures(context))
+          Array
+            .from(this.#providers)
+            .map(provider => provider.getFeatures(context))
         );
         for (const features of featuresList) {
           if (features.status === "fulfilled") {
