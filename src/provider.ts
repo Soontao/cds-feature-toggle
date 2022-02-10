@@ -10,7 +10,7 @@ export class CDSRequestProvider implements FeatureProvider {
   /**
    * extract http header as (enabled) feature list for current request
    * 
-   * @param featureHeaderName 
+   * @param featureHeaderName default is `x-cds-features`
    */
   constructor(featureHeaderName?: string) {
     if (featureHeaderName !== undefined) {
@@ -31,7 +31,7 @@ export class FeatureProviderContainer {
 
   #locks = new MutexMap();
 
-  #cache = new TTLMap(); // default 60 seconds cache
+  #cache = new TTLMap(1000); // default 1 second cache
 
   constructor(...providers: Array<FeatureProvider>) {
     if (providers.length > 0) {
@@ -46,18 +46,24 @@ export class FeatureProviderContainer {
   }
 
   #formatKey(context: any) {
-    // cache by tenant & user id
+    // use 'request id' and 'user id' as cache key
     return JSON.stringify({
       user: context?.user?.id ?? "unknown",
       tenant: context?.tenant ?? "unknown"
     });
   }
 
-  public async getFeatures(context: any): Promise<Features> {
-    // use 'request id' and 'user id' as cache key
+  /**
+   * get features list
+   * 
+   * @param context cds context
+   * @param force get feature without cache
+   * @returns 
+   */
+  public async getFeatures(context: any, force: boolean = false): Promise<Features> {
     const key = this.#formatKey(context);
     return this.#locks.getOrCreate(key).use(async () => {
-      if (!this.#cache.has(key)) {
+      if (force || !this.#cache.has(key)) {
         const allFeaturesSet = new Set<string>();
         const featuresList = await Promise.allSettled(
           Array

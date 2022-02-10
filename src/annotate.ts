@@ -55,11 +55,6 @@ const isEnabled = async (context: DetermineContext) => {
 
   }
 
-  // default enabled
-  if (op[ANNOTATE_KEY_ENABLED] === true) {
-    return true;
-  }
-
   return false;
 
 };
@@ -94,6 +89,8 @@ export interface FeatureCheckResult {
 }
 
 export const checkFeatureEnabled = async (context: DetermineContext): Promise<FeatureCheckResult> => {
+  // TODO: check service is enabled
+  // TODO: check entity is enabled
   const featureRelevant = isFeatureRelatedDef(context);
   const features = await context.featureProviderContainer.getFeatures(context.cdsContext);
   const redirect = await getRedirect(context);
@@ -132,7 +129,7 @@ export const supportFeatureAnnotate = (cds: any, ...providers: Array<FeatureProv
             cdsService: srv,
             featureProviderContainer: container
           };
-          
+
           evt[CONTEXT_KEY_FEATURE_PROVIDER] = container;
 
           const checkResult = await checkFeatureEnabled(context);
@@ -145,13 +142,14 @@ export const supportFeatureAnnotate = (cds: any, ...providers: Array<FeatureProv
           if (checkResult.redirect !== undefined) {
             evt[CONTEXT_KEY_EVENT_REDIRECT] = checkResult.redirect;
           }
-
-          if (checkResult.enabled === true) {
-            return;
+          
+          const errMessage = `${evt?.event} is not enabled`;
+          if (evt.error) { // request
+            evt.reject(400, errMessage);
+          } else { // event
+            throw new FeatureNotEnabledError(errMessage);
           }
-
-          throw new FeatureNotEnabledError(`${evt?.event} is not enabled`);
-
+          
         });
 
         srv.on("*", async (evt: any, next: Function) => {

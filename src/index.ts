@@ -9,9 +9,9 @@ export const providers = {
 
 export const features = {
   FeatureNotEnabledError,
-  supportFeatureAnnotate,
   FeatureProviderContainer,
-  providers
+  CDSRequestProvider,
+  supportFeatureAnnotate,
 };
 
 
