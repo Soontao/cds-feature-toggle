@@ -51,9 +51,14 @@ service ClassService {
 
 ## Setup
 
-> you need to enable the `cds-feature-toggle` in CAP `server.js`
+> you need to enable the `cds-feature-toggle` in CAP [`server.js`](https://cap.cloud.sap/docs/node.js/cds-serve#custom-server-js)
+
+```bash
+npm i -S cds-feature-toggle
+```
 
 ```js
+// projectRoot/srv/server.js
 const cds = require('@sap/cds')
 const { features, providers: { CDSRequestProvider } } = require("cds-feature-toggle")
 
