@@ -9,7 +9,8 @@
 
 
 ```javascript
-@cds.features.enabled : ['class-service'] // all event/entity/action/function require 'class-service' feature
+// all event/entity/action/function require 'class-service' feature
+@cds.features.enabled : ['class-service'] 
 service ClassService {
 
   // annotate the entity events

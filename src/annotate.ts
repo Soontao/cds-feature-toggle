@@ -35,6 +35,9 @@ const isFeatureRelatedDef = (context: DetermineContext) => {
       return true;
     }
   }
+  if (ANNOTATE_KEY_ENABLED in context.service.definition) {
+    return true;
+  }
   return false;
 };
 
@@ -220,7 +223,7 @@ export const supportFeatureAnnotate = (cds: any, ...providers: Array<FeatureProv
             return;
           }
 
-          const errMessage = `${evt?.event} is not enabled`;
+          const errMessage = `${evt?.entity ?? srv?.name}/${evt?.event} is not enabled`;
 
           if (evt.error) { // request
             evt.reject(400, errMessage);
