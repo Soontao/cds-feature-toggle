@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { intersection } from "@newdash/newdash/intersection";
 import { CONTEXT_KEY_FEATURE_PROVIDER } from "./constants";
 import { FeatureProviderContainer } from "./provider";
+import { isFeatureInFeatures } from "./utils";
 
 export interface WrapOption {
   /**
@@ -21,12 +21,7 @@ export const withFeature = (option: WrapOption) => <T extends Function>(handler:
 
       const features = await container.getFeatures(cds.context);
 
-      if (
-        // or enabled by feature toggle list
-        (option.enabled instanceof Array && intersection(option.enabled, features).length > 0) ||
-        // or enabled by single feature toggle
-        (typeof option.enabled === "string" && features.includes(option.enabled))
-      ) {
+      if ( isFeatureInFeatures(option.enabled, features)) {
         return handler(...args);
       }
 
