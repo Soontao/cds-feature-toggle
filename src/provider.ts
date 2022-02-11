@@ -1,6 +1,6 @@
 import { MutexMap } from "@newdash/newdash/functional/MutexMap";
 import { TTLMap } from "@newdash/newdash/functional/TTLMap";
-import { FeatureProvider, Features } from "./interface";
+import { DetermineContext, FeatureProvider, Features } from "./interface";
 
 
 export class CDSRequestProvider implements FeatureProvider {
@@ -18,9 +18,9 @@ export class CDSRequestProvider implements FeatureProvider {
     }
   }
 
-  public getFeatures(context: any) {
+  public getFeatures(context: DetermineContext) {
     // TODO: add signature verify
-    return Promise.resolve(context?._?.req?.headers?.[this.#headerName]?.split(",") ?? []);
+    return Promise.resolve(context?.request?.get?.(this.#headerName)?.split(",") ?? []);
   }
 
 }
@@ -45,7 +45,7 @@ export class FeatureProviderContainer {
     }
   }
 
-  #formatKey(context: any) {
+  #formatKey(context: DetermineContext) {
     // use 'request id' and 'user id' as cache key
     return JSON.stringify({
       user: context?.user?.id ?? "unknown",
@@ -60,7 +60,7 @@ export class FeatureProviderContainer {
    * @param force get feature without cache
    * @returns 
    */
-  public async getFeatures(context: any, force: boolean = false): Promise<Features> {
+  public async getFeatures(context: DetermineContext, force: boolean = false): Promise<Features> {
     const key = this.#formatKey(context);
     return this.#locks
       .getOrCreate(key)

@@ -9,14 +9,22 @@ export interface FeatureProvider {
    * 
    * @param context 
    */
-  getFeatures(context: any): Promise<Features>
+  getFeatures(context: DetermineContext): Promise<Features>
 
 }
 
 
 
 export interface DetermineContext {
-  cdsContext: any
-  cdsService: any
-  featureProviderContainer: FeatureProviderContainer
+  request: import("express").Request;
+  user: any;
+  event: string;
+  target: any;
+  tenant?: string;
+  query: any;
+  service: any;
+  /**
+   * feature provider containers
+   */
+  container: FeatureProviderContainer
 }
