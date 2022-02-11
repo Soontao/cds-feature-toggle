@@ -1,8 +1,7 @@
 /* eslint-disable camelcase */
 
 import {
-  CONTEXT_KEY_EVENT_REDIRECT,
-  CONTEXT_KEY_FEATURE_PROVIDER
+  CONTEXT_KEY_EVENT_REDIRECT, CONTEXT_KEY_FEATURE_DETERMINE_CONTEXT
 } from "./constants";
 import { FeatureNotEnabledError } from "./errors";
 import { DetermineContext, FeatureProvider } from "./interface";
@@ -38,7 +37,7 @@ export const supportFeatureAnnotate = (cds: any, ...providers: Array<FeatureProv
             logger,
           };
 
-          evt[CONTEXT_KEY_FEATURE_PROVIDER] = container;
+          evt[CONTEXT_KEY_FEATURE_DETERMINE_CONTEXT] = context;
 
           const checkResult = await checkFeatureEnabled(context);
 
@@ -67,10 +66,10 @@ export const supportFeatureAnnotate = (cds: any, ...providers: Array<FeatureProv
 
         srv.on("*", async (evt: any, next: Function) => {
 
-          if (evt[CONTEXT_KEY_EVENT_REDIRECT] !== undefined) {
+          if (CONTEXT_KEY_EVENT_REDIRECT in evt && typeof evt[CONTEXT_KEY_EVENT_REDIRECT] === "object") {
             const event = evt[CONTEXT_KEY_EVENT_REDIRECT].name.match(/\w*$/)[0];
             logger.debug(`redirect event from ${evt.event} to ${event}`);
-            return srv[event]({ ...evt, event });
+            return srv.send(event, evt.data);
           }
 
           return await next();

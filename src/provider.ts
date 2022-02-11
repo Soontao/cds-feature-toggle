@@ -1,11 +1,12 @@
 import { MutexMap } from "@newdash/newdash/functional/MutexMap";
 import { TTLMap } from "@newdash/newdash/functional/TTLMap";
+import { HEADER_DISABLE_CDS_FT_CACHE, HEADER_X_CDS_FEATURES_NAME } from "./constants";
 import { DetermineContext, FeatureProvider, Features } from "./interface";
 
 
 export class CDSRequestProvider implements FeatureProvider {
 
-  #headerName = "x-cds-features";
+  #headerName = HEADER_X_CDS_FEATURES_NAME;
 
   /**
    * extract http header as (enabled) feature list for current request
@@ -65,7 +66,7 @@ export class FeatureProviderContainer {
     return this.#locks
       .getOrCreate(key)
       .use(async () => {
-        if (force || !this.#cache.has(key)) {
+        if (force || HEADER_DISABLE_CDS_FT_CACHE in context.request.headers || !this.#cache.has(key)) {
           const allFeaturesSet = new Set<string>();
           const featuresList = await Promise.allSettled(
             Array

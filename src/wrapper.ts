@@ -1,6 +1,5 @@
 // @ts-nocheck
-import { CONTEXT_KEY_FEATURE_PROVIDER } from "./constants";
-import { FeatureProviderContainer } from "./provider";
+import { DetermineContext } from "./interface";
 import { isFeatureInFeatures } from "./utils";
 
 export interface WrapOption {
@@ -17,9 +16,9 @@ export const withFeature = (option: WrapOption) => <T extends Function>(handler:
 
     return async (...args) => {
 
-      const container: FeatureProviderContainer = cds.context[CONTEXT_KEY_FEATURE_PROVIDER];
+      const context: DetermineContext = cds.context[CONTEXT_KEY_FEATURE_DETERMINE_CONTEXT];
 
-      const features = await container.getFeatures(cds.context);
+      const features = await context.container.getFeatures(context);
 
       if ( isFeatureInFeatures(option.enabled, features)) {
         return handler(...args);

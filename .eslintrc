@@ -92,7 +92,8 @@
           "evt",
           "cds",
           "camelcase",
-          "mutex"
+          "mutex",
+          "axios"
         ]
       }
     ]
