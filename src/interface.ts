@@ -5,20 +5,28 @@ export type Features = Array<string>
 export interface FeatureProvider {
 
   /**
-   * cds context
+   * get feature list for context
    * 
-   * @param context 
+   * @param context determine context
    */
   getFeatures(context: DetermineContext): Promise<Features>
 
 }
 
 
-
+/**
+ * the determine context for extract features
+ */
 export interface DetermineContext {
   request: import("express").Request;
   user: any;
+  /**
+   * event
+   */
   event: string;
+  /**
+   * cds def
+   */
   target: any;
   tenant?: string;
   query: any;
@@ -26,5 +34,12 @@ export interface DetermineContext {
   /**
    * feature provider containers
    */
-  container: FeatureProviderContainer
+  container: FeatureProviderContainer;
+  logger: {
+    trace: Function;
+    debug: Function;
+    info: Function;
+    warn: Function;
+    error: Function;
+  }
 }

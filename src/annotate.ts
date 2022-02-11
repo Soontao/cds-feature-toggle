@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 
+import { find } from "@newdash/newdash/find";
 import { intersection } from "@newdash/newdash/intersection";
 import {
   ANNOTATE_KEY_CDS_FEATURE,
@@ -12,10 +13,12 @@ import { FeatureNotEnabledError } from "./errors";
 import { DetermineContext, FeatureProvider } from "./interface";
 import { FeatureProviderContainer } from "./provider";
 
-
 const annotateKeys = [ANNOTATE_KEY_CDS_FEATURE, ANNOTATE_KEY_ENABLED, ANNOTATE_KEY_REDIRECT_TARGET];
 
 const getDef = (context: DetermineContext) => {
+  if (context?.target !== undefined && context?.target?.kind === "entity") {
+    return context?.target;
+  }
   return context.service.operations[context.event];
 };
 
@@ -35,39 +38,81 @@ const isFeatureRelatedDef = (context: DetermineContext) => {
   return false;
 };
 
-const isEnabled = async (context: DetermineContext) => {
+const isFeatureInFeatures = (requiredFeatures: string | Array<string>, allFeatures: Array<string>) => {
 
-  const op = getDef(context);
-
-  if (op === undefined) {
-    // error
-    return false;
-  }
-
-  const enabledAnnotationValue = op[ANNOTATE_KEY_ENABLED];
-
-  // no annotation, means no feature required
-  if (enabledAnnotationValue === undefined) {
-    return true;
-  }
-
-  const currentContextFeatures = await context.container.getFeatures(context);
-
-  if (currentContextFeatures !== undefined && currentContextFeatures.length > 0) {
+  if (allFeatures !== undefined && allFeatures.length > 0) {
     // contains any features
-    if (enabledAnnotationValue instanceof Array) {
-      if (intersection(enabledAnnotationValue, currentContextFeatures).length > 0) {
+    if (requiredFeatures instanceof Array) {
+      if (intersection(requiredFeatures, allFeatures).length > 0) {
         return true;
       }
     }
 
     // contains the feature
-    if (typeof enabledAnnotationValue === "string") {
-      if (currentContextFeatures?.includes?.(enabledAnnotationValue)) {
+    if (typeof requiredFeatures === "string") {
+      if (allFeatures?.includes?.(requiredFeatures)) {
         return true;
       }
     }
+  }
 
+  return false;
+};
+
+
+const isEnabled = async (context: DetermineContext) => {
+
+  const def = getDef(context);
+
+  if (def === undefined) {
+    context.logger.error(
+      "could not get correct event def for feature toggle"
+    );
+    return false;
+  }
+
+  /**
+   * current request/user/tenant enabled feature list
+   */
+  let currentContextFeatures = undefined;
+
+  // check in service level
+  if (ANNOTATE_KEY_ENABLED in context?.service?.definition) {
+    currentContextFeatures = await context.container.getFeatures(context);
+    const requiredFeatures = context?.service?.definition[ANNOTATE_KEY_ENABLED];
+    if (!isFeatureInFeatures(requiredFeatures, currentContextFeatures)) {
+      context.logger.debug(
+        "required feature", requiredFeatures,
+        "context features", currentContextFeatures,
+        "not match"
+      );
+      return false;
+    }
+  }
+
+  /**
+   * current event required feature labels
+   */
+  let eventRequestedFeatureLabels = undefined;
+
+  if (def.kind === "entity" && ANNOTATE_KEY_CDS_FEATURE in def && def[ANNOTATE_KEY_CDS_FEATURE] instanceof Array) {
+    const eventFeature: any = find(def[ANNOTATE_KEY_CDS_FEATURE], { on: context.event });
+    eventRequestedFeatureLabels = eventFeature?.enabled;
+  } else {
+    eventRequestedFeatureLabels = def[ANNOTATE_KEY_ENABLED];
+  }
+
+  // no annotation, means no feature required
+  if (eventRequestedFeatureLabels === undefined) {
+    return true;
+  }
+
+  if (currentContextFeatures === undefined) {
+    currentContextFeatures = await context.container.getFeatures(context);
+  }
+
+  if (isFeatureInFeatures(eventRequestedFeatureLabels, currentContextFeatures)) {
+    return true;
   }
 
   return false;
@@ -76,7 +121,7 @@ const isEnabled = async (context: DetermineContext) => {
 
 const getRedirect = async (context: DetermineContext): Promise<any> => {
 
-  const op = context.service.operations[context.event];
+  const op = getDef(context);
 
   if (op[ANNOTATE_KEY_REDIRECT_TARGET] !== undefined) {
 
@@ -113,7 +158,7 @@ export const checkFeatureEnabled = async (context: DetermineContext): Promise<Fe
       featureRelevant, redirect: undefined, enabled: true, features: []
     };
   }
-  
+
   const features = await context.container.getFeatures(context);
   const redirect = await getRedirect(context);
 
@@ -121,8 +166,8 @@ export const checkFeatureEnabled = async (context: DetermineContext): Promise<Fe
     return {
       featureRelevant, redirect, enabled: true, features
     };
-  } 
-  
+  }
+
   const enabled = await isEnabled(context);
 
   return {
@@ -154,7 +199,8 @@ export const supportFeatureAnnotate = (cds: any, ...providers: Array<FeatureProv
             user: cds?.user,
             service: srv,
             tenant: evt?.tenant,
-            container: container
+            container: container,
+            logger,
           };
 
           evt[CONTEXT_KEY_FEATURE_PROVIDER] = container;
