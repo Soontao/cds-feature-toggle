@@ -1,6 +1,6 @@
 {
   "name": "cds-feature-toggle",
-  "version": "0.0.1",
+  "version": "0.0.2-alpha.0",
   "main": "lib/index.js",
   "author": {
     "name": "Theo Sun"
