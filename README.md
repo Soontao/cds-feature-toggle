@@ -37,7 +37,7 @@ service ClassService {
   @cds.features.redirect.target : [metricV2]
   action metric() returns MetricResponse;
 
-  // enabled on has feature 'feature-metrics-v2'
+  // enabled when request context has the feature 'feature-metrics-v2'
   // if 'feature-metrics-v3' is also enabled, 
   // will prefer to trigger the metricV3
   @cds.features.enabled         : 'feature-metrics-v2'
@@ -105,6 +105,6 @@ export class CDSRequestProvider implements FeatureProvider {
 
 you can easily implement a feature provider by yourself, read feature from `redis` or `database`, it depends on you. 
 
-
+## [CHANGELOG](./CHANGELOG.md)
 
 ## [LICENSE](./LICENSE)
