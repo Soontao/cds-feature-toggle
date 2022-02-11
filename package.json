@@ -1,6 +1,7 @@
 {
   "name": "cds-feature-toggle",
   "version": "0.0.2-alpha.0",
+  "description": "support feature toggle pattern for SAP CAP",
   "main": "lib/index.js",
   "author": {
     "name": "Theo Sun"

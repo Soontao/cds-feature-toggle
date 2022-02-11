@@ -1,9 +1,10 @@
 # cds feature toggle
 
+> support feature toggle pattern for SAP CAP cds
+
 [![node-test](https://github.com/Soontao/cds-feature-toggle/actions/workflows/nodejs.yml/badge.svg)](https://github.com/Soontao/cds-feature-toggle/actions/workflows/nodejs.yml)
-
-> support feature toggle pattern in SAP CAP cds format
-
+[![npm](https://img.shields.io/npm/v/cds-feature-toggle)](https://www.npmjs.com/package/cds-feature-toggle)
+[![NPM](https://img.shields.io/npm/l/cds-feature-toggle)](./LICENSE)
 
 ## Quick Overview
 
