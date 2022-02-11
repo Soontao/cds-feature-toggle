@@ -9,7 +9,7 @@
 ## Quick Overview
 
 
-```javascript
+```swift
 // all event/entity/action/function require 'class-service' feature
 @cds.features.enabled : ['class-service'] 
 service ClassService {
