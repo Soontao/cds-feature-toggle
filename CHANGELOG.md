@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/Soontao/cds-feature-toggle/compare/v0.0.2-alpha.1...v0.0.2) (2022-02-15)
+
+
+### Features
+
+* programming API for feature request ([7e2e6f9](https://github.com/Soontao/cds-feature-toggle/commit/7e2e6f943b80416eb185bedf87b36b1b7ee73d4d))
+* ut ([1322aa4](https://github.com/Soontao/cds-feature-toggle/commit/1322aa41113217631a3efd6d2f2628492c4e0f69))
+
 ### [0.0.2-alpha.1](https://github.com/Soontao/cds-feature-toggle/compare/v0.0.2-alpha.0...v0.0.2-alpha.1) (2022-02-11)
 
 ### 0.0.2-alpha.0 (2022-02-11)
