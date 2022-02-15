@@ -4,7 +4,7 @@
 
 [![node-test](https://github.com/Soontao/cds-feature-toggle/actions/workflows/nodejs.yml/badge.svg)](https://github.com/Soontao/cds-feature-toggle/actions/workflows/nodejs.yml)
 [![npm](https://img.shields.io/npm/v/cds-feature-toggle)](https://www.npmjs.com/package/cds-feature-toggle)
-[![codecov](https://codecov.io/gh/Soontao/cds-feature-toggle/branch/master/graph/badge.svg?token=36cAQGIQWC)](https://codecov.io/gh/Soontao/cds-feature-toggle)
+[![codecov](https://codecov.io/gh/Soontao/cds-feature-toggle/branch/main/graph/badge.svg?token=36cAQGIQWC)](https://codecov.io/gh/Soontao/cds-feature-toggle)
 [![license](https://img.shields.io/npm/l/cds-feature-toggle)](./LICENSE)
 
 ## Quick Overview
