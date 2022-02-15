@@ -219,4 +219,20 @@ describe("Feature Toggle Test Suite", () => {
 
   });
 
+  it("should support programming feature restriction", async () => {
+    const m1 = await axios.post("/index/freeAction001", {}, baseConfig);
+    expect(m1.status).toBe(400);
+    expect(m1.data.error.message).toContain("freeAction001 is not enabled");
+
+    const m2 = await axios.post("/index/freeAction001", {}, {
+      ...baseConfig,
+      headers: {
+        ...baseHeaders,
+        [HEADER_X_CDS_FEATURES_NAME]: "feat-action-001"
+      }
+    });
+    expect(m2.status).toBe(200);
+    expect(m2.data.name).toContain("freeAction001");
+  });
+
 });

@@ -1,3 +1,4 @@
+const { withFeature } = require("../../../../src/wrapper");
 
 
 
@@ -23,13 +24,12 @@ module.exports = async (srv) => {
 
   srv.on("metric2", handler);
 
+  srv.on("freeAction001", withFeature({ enabled: "feat-action-001" })(() => {
+    return { "service": "CDS", name: "freeAction001" };
+  }));
 
-  // another example, consume another 'service'
-  srv.on("classRecords", async () => {
-    const ClassService = await cds.connect.to("ClassService");
-    const { Classes } = ClassService.entities;
-    const { total } = await ClassService.run(SELECT.from(Classes).columns("count(1) as total"));
-    return total;
-  });
+  srv.on("freeAction002", withFeature({ enabled: ["feat-action-001", "feat-action-002"] })(() => {
+    return { "service": "CDS", name: "freeAction001" };
+  }));
 
 };

@@ -56,7 +56,7 @@ export const supportFeatureAnnotate = (cds: any, ...providers: Array<FeatureProv
 
           const errMessage = `${evt?.entity ?? srv?.name}/${evt?.event} is not enabled`;
 
-          if (evt.error) { // request
+          if (evt.reject) { // request
             evt.reject(400, errMessage);
           } else { // event
             throw new FeatureNotEnabledError(errMessage);

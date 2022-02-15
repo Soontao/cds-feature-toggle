@@ -36,8 +36,7 @@ service IndexService {
 
   // GET, parameter in URI
   function metric2(name : String) returns MetricReponse;
-  // unbounded action
-  function classRecords() returns Integer;
-  function firstClassId() returns Integer;
+  action freeAction001() returns MetricReponse;
+  action freeAction002() returns MetricReponse;
 
 }

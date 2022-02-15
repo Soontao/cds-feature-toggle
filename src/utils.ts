@@ -126,6 +126,7 @@ export const getRedirect = async (context: DetermineContext): Promise<any> => {
 
     for (const target of op[ANNOTATE_KEY_REDIRECT_TARGET]) {
       const targetEventName = target["="];
+      // TODO: check the redirect target is existed or not
       const targetEvent = context.service.operations[targetEventName];
       const targetContext = { ...context, event: targetEventName };
       if (await isEnabled(targetContext)) {
@@ -141,10 +142,19 @@ export const getRedirect = async (context: DetermineContext): Promise<any> => {
 };
 
 export interface FeatureCheckResult {
-  featureRelevant: boolean
-  enabled: boolean
-  redirect?: any,
-  features: Array<string>,
+  /**
+   * is feature relevant
+   */
+  featureRelevant: boolean;
+  enabled: boolean;
+  /**
+   * redirect target
+   */
+  redirect?: any;
+  /**
+   * req/user/context all features
+   */
+  features: Array<string>;
 }
 
 export const checkFeatureEnabled = async (context: DetermineContext): Promise<FeatureCheckResult> => {
