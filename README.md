@@ -106,6 +106,10 @@ export class CDSRequestProvider implements FeatureProvider {
 
 you can easily implement a feature provider by yourself, read feature from `redis` or `database`, it depends on you. 
 
+## Limitation
+
+* the default no handler behavior for `action`/`function` will be little difference
+
 ## [CHANGELOG](./CHANGELOG.md)
 
 ## [LICENSE](./LICENSE)
