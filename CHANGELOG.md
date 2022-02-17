@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3-alpha.0](https://github.com/Soontao/cds-feature-toggle/compare/v0.0.2...v0.0.3-alpha.0) (2022-02-17)
+
+
+### Features
+
+* support bounded action/function ([68845be](https://github.com/Soontao/cds-feature-toggle/commit/68845be25849cb8b898cb49ea34e3cedbb7a5ae8))
+
+
+### Bug Fixes
+
+* ut ([003f253](https://github.com/Soontao/cds-feature-toggle/commit/003f253d6bf0da3ea686b49c4ce5a3f5e8fa8b5c))
+
 ### [0.0.2](https://github.com/Soontao/cds-feature-toggle/compare/v0.0.2-alpha.1...v0.0.2) (2022-02-15)
 
 
