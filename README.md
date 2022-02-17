@@ -106,6 +106,11 @@ export class CDSRequestProvider implements FeatureProvider {
 
 you can easily implement a feature provider by yourself, read feature from `redis` or `database`, it depends on you. 
 
+## TODO
+
+- [ ] support redirect for bounded `action`/`function`
+- [ ] support `@cds.features.required` on full entity 
+
 ## Limitation
 
 * the default no handler behavior for `action`/`function` will be little difference

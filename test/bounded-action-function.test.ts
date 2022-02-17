@@ -42,6 +42,15 @@ describe("Bounded Action/Function Test Suite", () => {
     );
     expect(r5.status).toBe(200);
     expect(r5.data.value).toContain("222");
+
+    const r6 = await axios.post(
+      ENTRY + `(${peopleId})/test.app.people.PeopleService.UpdateName`,
+      { newName: "333" },
+      buildConfig("people-service", "feat-update-people-name")
+    );
+    expect(r6.status).toBe(200);
+    expect(r6.data.value).toContain("333");
+
   });
 
 });
