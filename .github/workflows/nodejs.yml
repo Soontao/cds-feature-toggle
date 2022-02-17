@@ -46,9 +46,11 @@ jobs:
           npm install
           npm i --no-save @sap/cds express sqlite3
           npm run build --if-present
-          npm run coverage
         env:
           CI: true
+
+      - name: test & coverage
+        run: npm run coverage
 
       - name: upload coverage
         uses: codecov/codecov-action@v1
