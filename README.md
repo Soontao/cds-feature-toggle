@@ -110,6 +110,7 @@ you can easily implement a feature provider by yourself, read feature from `redi
 
 - [ ] support redirect for bounded `action`/`function`
 - [ ] support `@cds.features.required` on full entity 
+- [ ] support SAP BTP feature toggle service (as feature provider)
 
 ## Limitation
 
