@@ -1,7 +1,7 @@
 // @ts-ignore
 import cds from "@sap/cds/lib";
-import { HEADER_DISABLE_CDS_FT_CACHE, HEADER_X_CDS_FEATURES_NAME } from "../src/constants";
-
+import { HEADER_X_CDS_FEATURES_NAME } from "../src/constants";
+import { baseConfig, baseHeaders } from "./shared";
 
 describe("Feature Toggle Test Suite", () => {
 
@@ -25,16 +25,6 @@ describe("Feature Toggle Test Suite", () => {
   });
 
 
-  const baseHeaders = {
-    [HEADER_DISABLE_CDS_FT_CACHE]: "true",
-  };
-
-  const baseConfig = {
-    validateStatus: function (status: any) {
-      return status >= 200 && status < 500;
-    },
-    headers: baseHeaders,
-  };
 
   it("should support restrict on service level", async () => {
 

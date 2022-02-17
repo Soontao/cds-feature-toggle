@@ -10,24 +10,24 @@
 ## Quick Overview
 
 
-```swift
+```groovy
 // all event/entity/action/function require 'class-service' feature
-@cds.features.enabled : ['class-service'] 
+@cds.features.required : ['class-service'] 
 service ClassService {
 
   // annotate the entity events
   entity Students @(cds.features : [
     {
-      on      : 'READ', 
-      enabled : 'feat-student-get'
+      on       : 'READ', 
+      required : 'feat-student-get'
     },
     {
-      on      : 'UPDATE',
-      enabled : 'feat-student-update'
+      on       : 'UPDATE',
+      required : 'feat-student-update'
     },
     {
-      on      : 'DELETE',
-      enabled : 'feat-student-delete'
+      on       : 'DELETE',
+      required : 'feat-student-delete'
     }
     // other event will skip feature check
   ])              as projection on training.Student;
@@ -41,11 +41,11 @@ service ClassService {
   // enabled when request context has the feature 'feature-metrics-v2'
   // if 'feature-metrics-v3' is also enabled, 
   // will prefer to trigger the metricV3
-  @cds.features.enabled         : 'feature-metrics-v2'
+  @cds.features.required         : 'feature-metrics-v2'
   @cds.features.redirect.target : [metricV3]
   action metricV2() returns MetricResponse;
 
-  @cds.features.enabled : 'feature-metrics-v3'
+  @cds.features.required : 'feature-metrics-v3'
   action metricV3() returns MetricResponse;
 
 }

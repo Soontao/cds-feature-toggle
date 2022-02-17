@@ -1,7 +1,8 @@
 /* eslint-disable camelcase */
 
 import {
-  CONTEXT_KEY_EVENT_REDIRECT, CONTEXT_KEY_FEATURE_DETERMINE_CONTEXT
+  CONTEXT_KEY_EVENT_REDIRECT,
+  CONTEXT_KEY_FEATURE_DETERMINE_CONTEXT
 } from "./constants";
 import { FeatureNotEnabledError } from "./errors";
 import { DetermineContext, FeatureProvider } from "./interface";
@@ -9,7 +10,13 @@ import { FeatureProviderContainer } from "./provider";
 import { checkFeatureEnabled } from "./utils";
 
 
-
+/**
+ * enable annotations for cds runtime
+ * 
+ * @param cds cds facade
+ * @param providers feature providers for context
+ * 
+ */
 export const supportFeatureAnnotate = (cds: any, ...providers: Array<FeatureProvider>) => {
 
   const container = new FeatureProviderContainer(...providers);

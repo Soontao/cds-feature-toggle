@@ -25,15 +25,15 @@ service CatalogService @(path : '/browse') {
   entity Orders @(cds.features : [
     {
       on      : 'READ',
-      enabled : 'feat-order-get'
+      required : 'feat-order-get'
     },
     {
       on      : 'UPDATE',
-      enabled : 'feat-order-update'
+      required : 'feat-order-update'
     },
     {
       on      : 'DELETE',
-      enabled : ['feat-order-delete']
+      required : ['feat-order-delete']
     }
   ]) : managed {
     key ID      : UUID;

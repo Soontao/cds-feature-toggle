@@ -13,8 +13,14 @@ const annotateKeys = [ANNOTATE_KEY_CDS_FEATURE, ANNOTATE_KEY_ENABLED, ANNOTATE_K
 
 export const getDef = (context: DetermineContext) => {
   if (context?.target !== undefined && context?.target?.kind === "entity") {
+    if (context.event in context.target?.actions) {
+      // bounded action/function
+      return context.target?.actions[context.event];
+    }
+    // raw entity
     return context?.target;
   }
+  // unbounded action/function
   return context.service.operations[context.event];
 };
 
@@ -96,7 +102,7 @@ export const isEnabled = async (context: DetermineContext) => {
 
   if (def.kind === "entity" && ANNOTATE_KEY_CDS_FEATURE in def && def[ANNOTATE_KEY_CDS_FEATURE] instanceof Array) {
     const eventFeature: any = find(def[ANNOTATE_KEY_CDS_FEATURE], { on: context.event });
-    eventRequestedFeatureLabels = eventFeature?.enabled;
+    eventRequestedFeatureLabels = eventFeature?.required;
   } else {
     eventRequestedFeatureLabels = def[ANNOTATE_KEY_ENABLED];
   }
