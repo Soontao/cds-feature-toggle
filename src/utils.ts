@@ -13,7 +13,7 @@ const annotateKeys = [ANNOTATE_KEY_CDS_FEATURE, ANNOTATE_KEY_ENABLED, ANNOTATE_K
 
 export const getDef = (context: DetermineContext) => {
   if (context?.target !== undefined && context?.target?.kind === "entity") {
-    if (context.event in context.target?.actions) {
+    if ("actions" in context?.target && context.event in context.target?.actions) {
       // bounded action/function
       return context.target?.actions[context.event];
     }
