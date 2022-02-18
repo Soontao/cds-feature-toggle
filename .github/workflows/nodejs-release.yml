@@ -19,7 +19,7 @@ jobs:
           node-version: 16.x
           registry-url: https://registry.npmjs.org/
 
-      - name: npm test
+      - name: npm install
         run: |
           npm install
           npm i --no-save @sap/cds express sqlite3
