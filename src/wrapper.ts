@@ -5,9 +5,9 @@ import { isFeatureInFeatures } from "./utils";
 
 export interface WrapOption {
   /**
-   * enabled condition, default is false
+   * required feature(s) for inner function, if give multi-features, any of one is matched is enabled
    */
-  enabled: Array<string> | string,
+  required: Array<string> | string,
   /**
    * no reject error when the feature is not enabled
    * if you register multi event handler for single action/function, it could be used
@@ -20,18 +20,27 @@ export interface WrapOption {
 /**
  * wrap a handler with feature check
  * 
- * @param option 
- * @returns EventHandler function
+ * @param option option of wrap
+ * @returns the function wrapper for handler
+ * 
+ * @example 
+ * 
+ * ```ts
+ * srv.on("freeAction002", withFeature({ required: ["feat-action-001", "feat-action-002"] })(() => {
+ *  return { "service": "CDS", name: "freeAction001" };
+ * }));
+ * ```
  */
 export const withFeature = (option: WrapOption) => <T extends Function>(handler: T): T => {
 
-  // TODO: assert handler is a function
+  if (typeof handler !== "function") {
+    throw new TypeError("for withFeature function, require an (async) function as parameter");
+  }
 
-  // enabled direct, but why you use this wrap ?
-  if (typeof option?.enabled === "string" || option?.enabled instanceof Array) {
+  if (typeof option?.required === "string" || option?.required instanceof Array) {
 
     return async (...args) => {
-      
+
       const evt = cds.context;
       const context: DetermineContext = evt[CONTEXT_KEY_FEATURE_DETERMINE_CONTEXT];
       const srv = context.service;
@@ -40,7 +49,7 @@ export const withFeature = (option: WrapOption) => <T extends Function>(handler:
 
         const features = await context.container.getFeatures(context);
 
-        if (isFeatureInFeatures(option.enabled, features)) {
+        if (isFeatureInFeatures(option.required, features)) {
           return handler(...args);
         }
 

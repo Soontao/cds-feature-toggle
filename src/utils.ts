@@ -32,13 +32,15 @@ export const getDef = (context: DetermineContext) => {
  */
 export const isFeatureRelatedDef = (context: DetermineContext) => {
   const op = getDef(context);
-  for (const annotateKey of annotateKeys) {
-    if (annotateKey in op) {
+  if (op !== undefined) {
+    for (const annotateKey of annotateKeys) {
+      if (annotateKey in op) {
+        return true;
+      }
+    }
+    if (ANNOTATE_KEY_ENABLED in context.service.definition) {
       return true;
     }
-  }
-  if (ANNOTATE_KEY_ENABLED in context.service.definition) {
-    return true;
   }
   return false;
 };
@@ -133,7 +135,7 @@ export const getRedirect = async (context: DetermineContext): Promise<any> => {
     for (const target of op[ANNOTATE_KEY_REDIRECT_TARGET]) {
       const targetEventName = target["="];
       // TODO: check the redirect target is existed or not
-      const targetEvent = context.service.operations[targetEventName];
+      const targetEvent = context.service.operations[targetEventName] ?? op?.parent?.actions?.[targetEventName];
       const targetContext = { ...context, event: targetEventName };
       if (await isEnabled(targetContext)) {
         return targetEvent;

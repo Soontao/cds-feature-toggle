@@ -74,9 +74,23 @@ export const supportFeatureAnnotate = (cds: any, ...providers: Array<FeatureProv
         srv.on("*", async (evt: any, next: Function) => {
 
           if (CONTEXT_KEY_EVENT_REDIRECT in evt && typeof evt[CONTEXT_KEY_EVENT_REDIRECT] === "object") {
-            const event = evt[CONTEXT_KEY_EVENT_REDIRECT].name.match(/\w*$/)[0];
-            logger.debug(`redirect event from ${evt.event} to ${event}`);
-            return srv.send(event, evt.data);
+            const redirectTarget = evt[CONTEXT_KEY_EVENT_REDIRECT];
+            const event = redirectTarget.name.match(/\w*$/)[0];
+            // bounded
+            if (redirectTarget?.parent?.kind === "entity") {
+              logger.debug(`redirect event from ${redirectTarget?.parent?.name}/${evt.event} to ${event}`);
+            }
+            // unbound
+            else {
+              logger.debug(`redirect event from ${evt.event} to ${event}`);
+            }
+
+            // construct a new request and overwrite the event
+            const req = { ...evt, event };
+            delete req[CONTEXT_KEY_EVENT_REDIRECT]; // remove redirect value
+            delete req[CONTEXT_KEY_FEATURE_DETERMINE_CONTEXT];
+            return srv.dispatch(new cds.Request(req));
+
           }
 
           return await next();

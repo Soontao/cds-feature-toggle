@@ -53,4 +53,54 @@ describe("Bounded Action/Function Test Suite", () => {
 
   });
 
+  it("should support redirect for bounded action/function", async () => {
+    const ENTRY = "/people/Peoples";
+    const r1 = await axios.post(ENTRY, { Name: "111" }, buildConfig("people-service"));
+    expect(r1.status).toBe(201);
+    expect(r1.data.Name).toBe("111");
+    expect(r1.data.ID).not.toBeUndefined();
+
+    const peopleId = r1.data.ID;
+
+    const r6 = await axios.post(
+      ENTRY + `(${peopleId})/test.app.people.PeopleService.UpdateNameV1`,
+      { newName: "333" },
+      buildConfig("people-service")
+    );
+    expect(r6.status).toBe(200);
+    expect(r6.data.value).toBe("333V1");
+
+    const r7 = await axios.post(
+      ENTRY + `(${peopleId})/test.app.people.PeopleService.UpdateNameV1`,
+      { newName: "333" },
+      buildConfig("people-service", "feat-update-people-name-v2")
+    );
+    expect(r7.status).toBe(200);
+    expect(r7.data.value).toBe("333V2");
+
+    const r8 = await axios.post(
+      ENTRY + `(${peopleId})/test.app.people.PeopleService.UpdateNameV1`,
+      { newName: "444" },
+      buildConfig("people-service", "feat-update-people-name-v3")
+    );
+    expect(r8.status).toBe(200);
+    expect(r8.data.value).toBe("444V3");
+
+    const r9 = await axios.post(
+      ENTRY + `(${peopleId})/test.app.people.PeopleService.UpdateNameV2`,
+      { newName: "555" },
+      buildConfig("people-service", "feat-update-people-name-v3")
+    );
+    expect(r9.status).toBe(200);
+    expect(r9.data.value).toBe("555V3");
+
+    const r10 = await axios.post(
+      ENTRY + `(${peopleId})/test.app.people.PeopleService.UpdateNameV2`,
+      { newName: "555" },
+      buildConfig("people-service")
+    );
+    expect(r10.status).toBe(400);
+    expect(r10.data.error.message).toContain("UpdateNameV2 is not enabled");
+  });
+
 });
