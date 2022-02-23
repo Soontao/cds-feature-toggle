@@ -2,6 +2,7 @@
 
 import { find } from "@newdash/newdash/find";
 import { intersection } from "@newdash/newdash/intersection";
+import { isEmpty } from "@newdash/newdash/isEmpty";
 import {
   ANNOTATE_KEY_CDS_FEATURE,
   ANNOTATE_KEY_ENABLED,
@@ -45,8 +46,16 @@ export const isFeatureRelatedDef = (context: DetermineContext) => {
   return false;
 };
 
+/**
+ * 
+ * @param requiredFeatures 
+ * @param allFeatures 
+ * @returns 
+ */
 export const isFeatureInFeatures = (requiredFeatures: string | Array<string>, allFeatures: Array<string>) => {
-
+  if (isEmpty(requiredFeatures)) {
+    return false;
+  }
   if (allFeatures !== undefined && allFeatures.length > 0) {
     // contains any features
     if (requiredFeatures instanceof Array) {
@@ -81,19 +90,48 @@ export const isEnabled = async (context: DetermineContext) => {
   /**
    * current request/user/tenant enabled feature list
    */
-  let currentContextFeatures = undefined;
+  let currentContextFeatures: any = undefined;
+
+  /**
+   * refresh context features on demand
+   */
+  const refreshContextFeatures = async () => {
+    if (currentContextFeatures === undefined) {
+      currentContextFeatures = await context.container.getFeatures(context);
+    }
+  };
 
   // check in service level
   if (ANNOTATE_KEY_ENABLED in context?.service?.definition) {
-    currentContextFeatures = await context.container.getFeatures(context);
+    await refreshContextFeatures();
     const requiredFeatures = context?.service?.definition[ANNOTATE_KEY_ENABLED];
-    if (!isFeatureInFeatures(requiredFeatures, currentContextFeatures)) {
-      context.logger.debug(
-        "required feature", requiredFeatures,
-        "context features", currentContextFeatures,
-        "not match"
-      );
-      return false;
+    if (!isEmpty(requiredFeatures)) {
+      if (!isFeatureInFeatures(requiredFeatures, currentContextFeatures)) {
+        context.logger.debug(
+          "service", context.service.name,
+          "required feature", requiredFeatures,
+          "context features", currentContextFeatures,
+          "not match"
+        );
+        return false;
+      }
+    }
+  }
+
+  // check in entity level
+  if (ANNOTATE_KEY_ENABLED in def && def.kind === "entity") {
+    await refreshContextFeatures();
+    const requiredFeatures = def[ANNOTATE_KEY_ENABLED];
+    if (!isEmpty(requiredFeatures)) {
+      if (!isFeatureInFeatures(requiredFeatures, currentContextFeatures)) {
+        context.logger.debug(
+          "entity", def.name,
+          "required feature", requiredFeatures,
+          "context features", currentContextFeatures,
+          "not match"
+        );
+        return false;
+      }
     }
   }
 
@@ -103,26 +141,28 @@ export const isEnabled = async (context: DetermineContext) => {
   let eventRequestedFeatureLabels = undefined;
 
   if (def.kind === "entity" && ANNOTATE_KEY_CDS_FEATURE in def && def[ANNOTATE_KEY_CDS_FEATURE] instanceof Array) {
+    // for @cds.features: [{on:event,required:[]}]
     const eventFeature: any = find(def[ANNOTATE_KEY_CDS_FEATURE], { on: context.event });
     eventRequestedFeatureLabels = eventFeature?.required;
   } else {
     eventRequestedFeatureLabels = def[ANNOTATE_KEY_ENABLED];
   }
 
-  // no annotation, means no feature required
-  if (eventRequestedFeatureLabels === undefined) {
-    return true;
+  if (!isEmpty(eventRequestedFeatureLabels)) {
+    await refreshContextFeatures();
+    if (!isFeatureInFeatures(eventRequestedFeatureLabels, currentContextFeatures)) {
+      context.logger.debug(
+        "service", context.service.name,
+        "event", context.event,
+        "required feature", eventRequestedFeatureLabels,
+        "context features", currentContextFeatures,
+        "not match"
+      );
+      return false;
+    }
   }
 
-  if (currentContextFeatures === undefined) {
-    currentContextFeatures = await context.container.getFeatures(context);
-  }
-
-  if (isFeatureInFeatures(eventRequestedFeatureLabels, currentContextFeatures)) {
-    return true;
-  }
-
-  return false;
+  return true;
 
 };
 
@@ -166,8 +206,6 @@ export interface FeatureCheckResult {
 }
 
 export const checkFeatureEnabled = async (context: DetermineContext): Promise<FeatureCheckResult> => {
-  // TODO: check service is enabled
-  // TODO: check entity is enabled
   const featureRelevant = isFeatureRelatedDef(context);
 
   if (!featureRelevant) {

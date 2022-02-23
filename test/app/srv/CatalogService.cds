@@ -22,20 +22,21 @@ service CatalogService @(path : '/browse') {
                   on books.author = $self;
   }
 
-  entity Orders @(cds.features : [
+  @cds.features : [
     {
-      on      : 'READ',
+      on       : 'READ',
       required : 'feat-order-get'
     },
     {
-      on      : 'UPDATE',
+      on       : 'UPDATE',
       required : 'feat-order-update'
     },
     {
-      on      : 'DELETE',
+      on       : 'DELETE',
       required : ['feat-order-delete']
     }
-  ]) : managed {
+  ]
+  entity Orders : managed {
     key ID      : UUID;
         book    : Association to Books;
         country : Country;

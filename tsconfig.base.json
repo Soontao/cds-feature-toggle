@@ -6,6 +6,8 @@
     "module": "CommonJS",
     "sourceMap": true,
     "outDir": "lib",
+    "skipLibCheck": true,
+    "useUnknownInCatchVariables": false,
     "esModuleInterop": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,

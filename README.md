@@ -15,22 +15,19 @@
 @cds.features.required : ['class-service'] 
 service ClassService {
 
-  // annotate the entity events
-  entity Students @(cds.features : [
-    {
-      on       : 'READ', 
-      required : 'feat-student-get'
-    },
-    {
-      on       : 'UPDATE',
-      required : 'feat-student-update'
-    },
+  // annotate the entity built-in events
+  @cds.features : [
     {
       on       : 'DELETE',
-      required : 'feat-student-delete'
+      required : 'feat-student-delete' // generally, maybe we dis-allowed user to delete entry
     }
     // other event will skip feature check
-  ])              as projection on training.Student;
+  ]
+  entity Students               as projection on training.Student;
+
+  // or simply require feature for all events/action/function under the entity
+  @cds.features.required: 'feat-teacher-management'
+  entity Teachers  as projection on training.Teacher;
 
   // enabled by default
   // if 'metricV2' or 'metricV3' is enabled, 
@@ -39,14 +36,9 @@ service ClassService {
   action metric() returns MetricResponse;
 
   // enabled when request context has the feature 'feature-metrics-v2'
-  // if 'feature-metrics-v3' is also enabled, 
-  // will prefer to trigger the metricV3
   @cds.features.required         : 'feature-metrics-v2'
-  @cds.features.redirect.target : [metricV3]
   action metricV2() returns MetricResponse;
 
-  @cds.features.required : 'feature-metrics-v3'
-  action metricV3() returns MetricResponse;
 
 }
 ```
@@ -97,7 +89,6 @@ export class CDSRequestProvider implements FeatureProvider {
   }
 
   public getFeatures(context: DetermineContext) {
-    // TODO: add signature verify
     return Promise.resolve(context?.request?.get?.(this.#headerName)?.split(",") ?? []);
   }
 
@@ -109,7 +100,7 @@ you can easily implement a feature provider by yourself, read feature from `redi
 ## TODO
 
 - [x] support redirect for bounded `action`/`function`
-- [ ] support `@cds.features.required` on full entity 
+- [x] support `@cds.features.required` on full entity 
 - [ ] support SAP BTP feature toggle service (as feature provider)
 
 ## Limitation
