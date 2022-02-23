@@ -28,8 +28,8 @@ module.exports = async (srv) => {
     return { "service": "CDS", name: "freeAction001" };
   }));
 
-  srv.on("freeAction002", withFeature({ required: ["feat-action-001", "feat-action-002"] })(() => {
-    return { "service": "CDS", name: "freeAction001" };
+  srv.on("freeAction002", withFeature({ required: ["feat-action-001", "feat-action-002"] }, () => {
+    return { "service": "CDS", name: "freeAction002" };
   }));
 
 };

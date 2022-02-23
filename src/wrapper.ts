@@ -31,49 +31,57 @@ export interface WrapOption {
  * }));
  * ```
  */
-export const withFeature = (option: WrapOption) => <T extends Function>(handler: T): T => {
+export function withFeature<T extends Function>(option: WrapOption, handler: T): T;
+export function withFeature<T extends Function>(option: WrapOption): (handler: T) => T;
+export function withFeature<T extends Function>(option: WrapOption, handler?: T) {
+  const wrapper = (handler: T): T => {
 
-  if (typeof handler !== "function") {
-    throw new TypeError("for withFeature function, require an (async) function as parameter");
-  }
+    if (typeof handler !== "function") {
+      throw new TypeError("for withFeature function, require an (async) function as parameter");
+    }
 
-  if (typeof option?.required === "string" || option?.required instanceof Array) {
+    if (typeof option?.required === "string" || option?.required instanceof Array) {
 
-    return async (...args) => {
+      return async (...args) => {
 
-      const evt = cds.context;
-      const context: DetermineContext = evt[CONTEXT_KEY_FEATURE_DETERMINE_CONTEXT];
-      const srv = context.service;
+        const evt = cds.context;
+        const context: DetermineContext = evt[CONTEXT_KEY_FEATURE_DETERMINE_CONTEXT];
+        const srv = context.service;
 
-      if (context !== undefined) {
+        if (context !== undefined) {
 
-        const features = await context.container.getFeatures(context);
+          const features = await context.container.getFeatures(context);
 
-        if (isFeatureInFeatures(option.required, features)) {
-          return handler(...args);
-        }
-
-        if (option.noReject !== true) {
-          const errMessage = `${evt?.entity ?? srv?.name}/${evt?.event} is not enabled`;
-
-          if (evt.reject) { // request
-            evt.reject(400, errMessage);
-          } else { // event
-            throw new FeatureNotEnabledError(errMessage);
+          if (isFeatureInFeatures(option.required, features)) {
+            return handler(...args);
           }
+
+          if (option.noReject !== true) {
+            const errMessage = `${evt?.entity ?? srv?.name}/${evt?.event} is not enabled`;
+
+            if (evt.reject) { // request
+              evt.reject(400, errMessage);
+            } else { // event
+              throw new FeatureNotEnabledError(errMessage);
+            }
+          }
+
         }
 
-      }
+        let nextFunction: Function = undefined;
 
-      let nextFunction: Function = undefined;
+        if (typeof args[args.length - 1] === "function" && args[args.length - 1]?.name === "next") {
+          nextFunction = args[args.length - 1];
+        }
 
-      if (typeof args[args.length - 1] === "function" && args[args.length - 1]?.name === "next") {
-        nextFunction = args[args.length - 1];
-      }
+        return nextFunction?.call?.();
+      };
+    } else {
+    }
 
-      return nextFunction?.call?.();
-    };
-  } else {
+  };
+  if (handler === undefined) {
+    return wrapper;
   }
-
+  return wrapper(handler);
 };
