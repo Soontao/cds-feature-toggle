@@ -16,6 +16,15 @@ import { checkFeatureEnabled } from "./utils";
  * @param cds cds facade
  * @param providers feature providers for context
  * 
+ * @example
+ * 
+ * ```ts
+ * const cds = require('@sap/cds')
+ * const { features, providers: { CDSRequestProvider } } = require("cds-feature-toggle")
+ * features.supportFeatureAnnotate(cds, new CDSRequestProvider())
+ * module.exports = cds.server
+ * ```
+ * 
  */
 export const supportFeatureAnnotate = (cds: any, ...providers: Array<FeatureProvider>) => {
 
