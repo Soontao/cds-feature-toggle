@@ -3,7 +3,11 @@ import { TTLMap } from "@newdash/newdash/functional/TTLMap";
 import { HEADER_DISABLE_CDS_FT_CACHE, HEADER_X_CDS_FEATURES_NAME } from "./constants";
 import { DetermineContext, FeatureProvider, Features } from "./interface";
 
-
+/**
+ * the minimal provider which just extract `features` from HTTP header without verification.
+ * 
+ * it maybe **DANGEROUS** if the CAP service is public
+ */
 export class CDSRequestProvider implements FeatureProvider {
 
   #headerName = HEADER_X_CDS_FEATURES_NAME;
