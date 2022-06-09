@@ -79,24 +79,21 @@ npm i -S cds-hyper-app-service cds-feature-toggle
 
 ```ts
 export class CDSRequestProvider implements FeatureProvider {
-
-  #headerName = "x-cds-features";
-
+  #headerName = HEADER_X_CDS_FEATURES_NAME;
   /**
    * extract http header as (enabled) feature list for current request
    * 
-   * @param featureHeaderName default is `x-cds-features`
+   * @param options.featureHeaderName default is `x-cds-features`
    */
-  constructor(featureHeaderName?: string) {
-    if (featureHeaderName !== undefined) {
-      this.#headerName = featureHeaderName;
+  constructor(options: { featureHeaderName?: string }) {
+    if (typeof options?.featureHeaderName === "string") {
+      this.#headerName = options?.featureHeaderName;
     }
   }
-
   public getFeatures(context: DetermineContext) {
+    // TODO: add signature verify
     return Promise.resolve(context?.request?.get?.(this.#headerName)?.split(",") ?? []);
   }
-
 }
 ```
 

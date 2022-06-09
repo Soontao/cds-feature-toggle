@@ -3,6 +3,24 @@ import { TTLMap } from "@newdash/newdash/functional/TTLMap";
 import { HEADER_DISABLE_CDS_FT_CACHE, HEADER_X_CDS_FEATURES_NAME } from "./constants";
 import { DetermineContext, FeatureProvider, Features } from "./interface";
 
+
+/**
+ * Dummy Feature Provider for test
+ */
+export class DummyProvider implements FeatureProvider {
+
+  private features: Features = [];
+
+  constructor(options: { features: Features }) {
+    this.features = options?.features ?? [];
+  }
+
+  async getFeatures(): Promise<Features> {
+    return this.features;
+  }
+
+}
+
 /**
  * the minimal provider which just extract `features` from HTTP header without verification.
  * 
@@ -15,11 +33,11 @@ export class CDSRequestProvider implements FeatureProvider {
   /**
    * extract http header as (enabled) feature list for current request
    * 
-   * @param featureHeaderName default is `x-cds-features`
+   * @param options.featureHeaderName default is `x-cds-features`
    */
-  constructor(featureHeaderName?: string) {
-    if (featureHeaderName !== undefined) {
-      this.#headerName = featureHeaderName;
+  constructor(options: { featureHeaderName?: string }) {
+    if (typeof options?.featureHeaderName === "string") {
+      this.#headerName = options?.featureHeaderName;
     }
   }
 
@@ -38,9 +56,17 @@ export class FeatureProviderContainer {
 
   #cache = new TTLMap(1000); // default 1 second cache
 
-  constructor(...providers: Array<FeatureProvider>) {
-    if (providers.length > 0) {
-      this.#providers = new Set(providers);
+  /**
+   * FeatureProviderContainer
+   * 
+   * @param options options for container
+   */
+  constructor(options: { providers: Array<FeatureProvider>, cacheTtl: number }) {
+    if (options?.providers.length > 0) {
+      this.#providers = new Set(options.providers);
+    }
+    if (typeof options?.cacheTtl === "number" && options.cacheTtl > 0) {
+      this.#cache = new TTLMap(options.cacheTtl);
     }
   }
 
@@ -70,7 +96,7 @@ export class FeatureProviderContainer {
     return this.#locks
       .getOrCreate(key)
       .use(async () => {
-        if (force || HEADER_DISABLE_CDS_FT_CACHE in context.request?.headers || !this.#cache.has(key)) {
+        if (force || HEADER_DISABLE_CDS_FT_CACHE in (context.request?.headers ?? {}) || !this.#cache.has(key)) {
           const allFeaturesSet = new Set<string>();
           const featuresList = await Promise.allSettled(
             Array
@@ -94,3 +120,5 @@ export class FeatureProviderContainer {
   }
 
 }
+
+export const builtInProviders = [DummyProvider, CDSRequestProvider];

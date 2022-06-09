@@ -1,26 +1,32 @@
 // @ts-nocheck
 
 import { ApplicationServiceExt } from "cds-hyper-app-service";
-import { cdsProjectRequire, cwdRequireCDS } from "cds-internal-tool";
+import { ApplicationService, cdsProjectRequire, cwdRequireCDS, Logger } from "cds-internal-tool";
 import { CONTEXT_KEY_FEATURE_DETERMINE_CONTEXT } from "./constants";
 import { FeatureNotEnabledError } from "./errors";
 import { DetermineContext } from "./interface";
-import { CDSRequestProvider, FeatureProviderContainer } from "./provider";
+import { builtInProviders, CDSRequestProvider, FeatureProviderContainer } from "./provider";
 import { checkFeatureEnabled } from "./utils";
-
 
 /**
  * hyper app service extension for feature toggle
  */
-export class FeatureToggleExt extends ApplicationServiceExt<{ providers?: Array<string> }> {
+export class FeatureToggleExt extends ApplicationServiceExt<{ providers?: Array<string>, cacheTtl?: number }> {
 
-  public async beforeInit(srv, options): void | Promise<void> {
+
+  private container: FeatureProviderContainer;
+
+  private logger: Logger;
+
+  constructor(options: { providers?: Array<string>, cacheTtl?: number }) {
+    super(options);
 
     const providers = [];
 
     for (const providerName of (options?.providers ?? [CDSRequestProvider.name])) {
-      if (providerName === CDSRequestProvider.name) {
-        providers.push(new CDSRequestProvider());
+      const FeatureProvider = builtInProviders.find(provider => provider.name === providerName);
+      if (FeatureProvider !== undefined) {
+        providers.push(new FeatureProvider());
       }
       else {
         const m = cdsProjectRequire(providerName);
@@ -28,12 +34,17 @@ export class FeatureToggleExt extends ApplicationServiceExt<{ providers?: Array<
       }
     }
 
-    const container = new FeatureProviderContainer(...providers);
+    this.container = new FeatureProviderContainer({
+      providers,
+      cacheTtl: options?.cacheTtl
+    });
 
-    const logger = cwdRequireCDS().log("feature");
+    this.logger = cwdRequireCDS().log("feature");
 
-    srv.before("*", this._createHandler(container, logger));
+  }
 
+  public async beforeInit(srv: ApplicationService): void | Promise<void> {
+    srv.before("*", this._createHandler(this.container, this.logger));
   }
 
 
