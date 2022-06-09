@@ -1,2 +1,2 @@
-import { RateLimitExt } from "./ext";
-export = RateLimitExt
+import { FeatureToggleExt } from "./ext";
+export = FeatureToggleExt

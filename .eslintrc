@@ -78,24 +78,6 @@
       {
         "SwitchCase": 1
       }
-    ],
-    "spellcheck/spell-checker": [
-      "warn",
-      {
-        "ignoreRequire": true,
-        // put false-positive words here
-        "skipWords": [
-          "javascript",
-          "req",
-          "nocheck",
-          "srv",
-          "evt",
-          "cds",
-          "camelcase",
-          "mutex",
-          "axios"
-        ]
-      }
     ]
   }
 }

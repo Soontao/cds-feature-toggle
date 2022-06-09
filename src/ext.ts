@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import HyperAppService from "cds-hyper-app-service";
-import { cdsProjectRequire, cwdRequireCDS, Logger } from "cds-internal-tool";
+import { ApplicationServiceExt } from "cds-hyper-app-service";
+import { cdsProjectRequire, cwdRequireCDS } from "cds-internal-tool";
 import { CONTEXT_KEY_FEATURE_DETERMINE_CONTEXT } from "./constants";
 import { FeatureNotEnabledError } from "./errors";
 import { DetermineContext } from "./interface";
@@ -9,19 +9,16 @@ import { CDSRequestProvider, FeatureProviderContainer } from "./provider";
 import { checkFeatureEnabled } from "./utils";
 
 
-export class RateLimitExt extends HyperAppService.ApplicationServiceExt<{ providers?: Array<string> }> {
+/**
+ * hyper app service extension for feature toggle
+ */
+export class FeatureToggleExt extends ApplicationServiceExt<{ providers?: Array<string> }> {
 
+  public async beforeInit(srv, options): void | Promise<void> {
 
-  private container: FeatureProviderContainer;
-
-  private logger: Logger;
-
-  constructor(srv, options) {
-    super(srv, options);
-    const cds = cwdRequireCDS();
     const providers = [];
 
-    for (const providerName of (this.options.providers ?? [CDSRequestProvider.name])) {
+    for (const providerName of (options?.providers ?? [CDSRequestProvider.name])) {
       if (providerName === CDSRequestProvider.name) {
         providers.push(new CDSRequestProvider());
       }
@@ -31,16 +28,21 @@ export class RateLimitExt extends HyperAppService.ApplicationServiceExt<{ provid
       }
     }
 
-    this.container = new FeatureProviderContainer(...providers);
-    this.logger = cds.log("feature");
+    const container = new FeatureProviderContainer(...providers);
+
+    const logger = cwdRequireCDS().log("feature");
+
+    srv.before("*", this._createHandler(container, logger));
 
   }
 
-  private createHandler() {
-    const container = this.container;
-    const logger = this.logger;
-    
-    return async function (evt) {
+
+  private _createHandler(container, logger) {
+
+    /**
+     * feature toggle handler for attach context and reject request if feature not enabled
+     */
+    return async function featureToggleHandler(evt) {
 
       const srv = this;
 
@@ -97,10 +99,6 @@ export class RateLimitExt extends HyperAppService.ApplicationServiceExt<{ provid
       }
 
     };
-  }
-
-  async beforeInit(): void | Promise<void> {
-    this.srv.before("*", this.createHandler());
   }
 
 }
