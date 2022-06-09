@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x, 18.x]
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
 
     steps:
       - name: Set git to use LF to checkout
@@ -43,7 +43,7 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm install
+          npm ci
           npm run build --if-present
         env:
           CI: true
