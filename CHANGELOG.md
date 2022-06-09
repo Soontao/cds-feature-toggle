@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/Soontao/cds-feature-toggle/compare/v0.0.3-alpha.0...v0.0.3) (2022-06-09)
+
+
+### Features
+
+* support entity level direct check ([4e05ffc](https://github.com/Soontao/cds-feature-toggle/commit/4e05ffc68d9208cdb04883342224c63376453bec))
+* support multi format for wrapper ([0e32e1c](https://github.com/Soontao/cds-feature-toggle/commit/0e32e1c24edc0748fe0b703edf682f91dc84e582))
+* support redirect for bounded action/function ([1f84604](https://github.com/Soontao/cds-feature-toggle/commit/1f846049adc50fd282fe3c181713e11cf35d21c4))
+
 ### [0.0.3-alpha.0](https://github.com/Soontao/cds-feature-toggle/compare/v0.0.2...v0.0.3-alpha.0) (2022-02-17)
 
 
