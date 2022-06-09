@@ -3,6 +3,7 @@
 import { find } from "@newdash/newdash/find";
 import { intersection } from "@newdash/newdash/intersection";
 import { isEmpty } from "@newdash/newdash/isEmpty";
+import { Definition, isCDSDefinition } from "cds-internal-tool";
 import {
   ANNOTATE_KEY_CDS_FEATURE,
   ANNOTATE_KEY_ENABLED,
@@ -12,7 +13,7 @@ import { DetermineContext } from "./interface";
 
 const annotateKeys = [ANNOTATE_KEY_CDS_FEATURE, ANNOTATE_KEY_ENABLED, ANNOTATE_KEY_REDIRECT_TARGET];
 
-export const getDef = (context: DetermineContext) => {
+export const getDef = (context: DetermineContext): Definition => {
   if (context?.target !== undefined && context?.target?.kind === "entity") {
     if ("actions" in context?.target && context.event in context.target?.actions) {
       // bounded action/function
@@ -31,20 +32,28 @@ export const getDef = (context: DetermineContext) => {
  * @param context 
  * @returns 
  */
-export const isFeatureRelatedDef = (context: DetermineContext) => {
+export const isFeatureRelatedContext = (context: DetermineContext) => {
   const op = getDef(context);
   if (op !== undefined) {
     for (const annotateKey of annotateKeys) {
-      if (annotateKey in op) {
-        return true;
-      }
+      if (annotateKey in op) { return true; }
     }
-    if (ANNOTATE_KEY_ENABLED in context.service.definition) {
+    if (isFeatureRelatedDef(context.service.definition)) {
       return true;
     }
   }
   return false;
 };
+
+
+export function isFeatureRelatedDef(def: Definition) {
+  if (isCDSDefinition(def)) {
+    if (ANNOTATE_KEY_ENABLED in def) {
+      return true;
+    }
+  }
+  return true;
+}
 
 /**
  * 
@@ -206,7 +215,7 @@ export interface FeatureCheckResult {
 }
 
 export const checkFeatureEnabled = async (context: DetermineContext): Promise<FeatureCheckResult> => {
-  const featureRelevant = isFeatureRelatedDef(context);
+  const featureRelevant = isFeatureRelatedContext(context);
 
   if (!featureRelevant) {
     return {

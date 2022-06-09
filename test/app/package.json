@@ -1,0 +1,18 @@
+{
+  "cds": {
+    "requires": {
+      "app-service": {
+        "impl": "cds-hyper-app-service",
+        "exts": [
+          "builtIn",
+          {
+            "impl": "../../src",
+            "providers": [
+              "CDSRequestProvider"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

@@ -45,26 +45,31 @@ service ClassService {
 
 ## Setup
 
-> you need to enable the `cds-feature-toggle` in CAP [`server.js`](https://cap.cloud.sap/docs/node.js/cds-serve#custom-server-js)
+> you need to enable the `cds-feature-toggle` by `cds-hyper-app-service` extension config
 
 ```bash
-npm i -S cds-feature-toggle
+npm i -S cds-hyper-app-service cds-feature-toggle
 ```
 
 ```js
-// projectRoot/srv/server.js
-const cds = require('@sap/cds')
-const { features, providers: { CDSRequestProvider } } = require("cds-feature-toggle")
-
-
-cds.once('bootstrap', app => {
-  // whatever thing here
-})
-
-
-features.supportFeatureAnnotate(cds, new CDSRequestProvider())
-
-module.exports = cds.server
+{
+  "cds": {
+    "requires": {
+      "app-service": {
+        "impl": "cds-hyper-app-service",
+        "exts": [
+          "builtIn",
+          {
+            "impl": "cds-feature-toggle",
+            "providers": [
+              "CDSRequestProvider"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
 ```
 
 ## Providers

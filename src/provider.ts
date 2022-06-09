@@ -70,7 +70,7 @@ export class FeatureProviderContainer {
     return this.#locks
       .getOrCreate(key)
       .use(async () => {
-        if (force || HEADER_DISABLE_CDS_FT_CACHE in context.request.headers || !this.#cache.has(key)) {
+        if (force || HEADER_DISABLE_CDS_FT_CACHE in context.request?.headers || !this.#cache.has(key)) {
           const allFeaturesSet = new Set<string>();
           const featuresList = await Promise.allSettled(
             Array

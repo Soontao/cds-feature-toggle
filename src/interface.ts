@@ -1,3 +1,4 @@
+import { ApplicationService, Definition, Logger, User } from "cds-internal-tool";
 import { FeatureProviderContainer } from "./provider";
 
 export type Features = Array<string>
@@ -18,28 +19,31 @@ export interface FeatureProvider {
  * the determine context for extract features
  */
 export interface DetermineContext {
-  request: import("express").Request;
-  user: any;
   /**
-   * event
+   * http incoming request
+   */
+  request: import("express").Request;
+  /**
+   * user information
+   */
+  user: User;
+  /**
+   * event name
    */
   event: string;
   /**
    * cds def
    */
-  target: any;
+  target: Definition;
+  /**
+   * tenant id, could be undefined
+   */
   tenant?: string;
   query: any;
-  service: any;
+  service: ApplicationService;
   /**
    * feature provider containers
    */
   container: FeatureProviderContainer;
-  logger: {
-    trace: Function;
-    debug: Function;
-    info: Function;
-    warn: Function;
-    error: Function;
-  }
+  logger: Logger;
 }
