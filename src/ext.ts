@@ -11,26 +11,26 @@ import { checkFeatureEnabled } from "./utils";
 /**
  * hyper app service extension for feature toggle
  */
-export class FeatureToggleExt extends ApplicationServiceExt<{ providers?: Array<string>, cacheTtl?: number }> {
+export class FeatureToggleExt extends ApplicationServiceExt {
 
 
   private container: FeatureProviderContainer;
 
   private logger: Logger;
 
-  constructor(options: { providers?: Array<string>, cacheTtl?: number }) {
+  constructor(options: { providers?: Array<{ impl: string }>, cacheTtl?: number }) {
     super(options);
 
     const providers = [];
 
-    for (const providerName of (options?.providers ?? [CDSRequestProvider.name])) {
-      const FeatureProvider = builtInProviders.find(provider => provider.name === providerName);
+    for (const providerOptions of (options?.providers ?? [{ impl: CDSRequestProvider.name }])) {
+      const FeatureProvider = builtInProviders.find(provider => provider.name === providerOptions.impl);
       if (FeatureProvider !== undefined) {
-        providers.push(new FeatureProvider());
+        providers.push(new FeatureProvider(providerOptions));
       }
       else {
-        const m = cdsProjectRequire(providerName);
-        providers.push(new m()); // TODO: check provide function is available
+        const m = cdsProjectRequire(providerOptions);
+        providers.push(new m(providerOptions)); // TODO: check provide function is available
       }
     }
 

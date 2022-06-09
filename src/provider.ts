@@ -33,11 +33,11 @@ export class CDSRequestProvider implements FeatureProvider {
   /**
    * extract http header as (enabled) feature list for current request
    * 
-   * @param options.featureHeaderName default is `x-cds-features`
+   * @param options.header default is `x-cds-features`
    */
-  constructor(options: { featureHeaderName?: string }) {
-    if (typeof options?.featureHeaderName === "string") {
-      this.#headerName = options?.featureHeaderName;
+  constructor(options: { header?: string }) {
+    if (typeof options?.header === "string") {
+      this.#headerName = options?.header;
     }
   }
 

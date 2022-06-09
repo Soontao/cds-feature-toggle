@@ -8,7 +8,10 @@
           {
             "impl": "../../src",
             "providers": [
-              "CDSRequestProvider"
+              {
+                "impl": "CDSRequestProvider",
+                "header": "x-cds-features"
+              }
             ]
           }
         ]

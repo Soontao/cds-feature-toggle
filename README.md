@@ -62,7 +62,10 @@ npm i -S cds-hyper-app-service cds-feature-toggle
           {
             "impl": "cds-feature-toggle",
             "providers": [
-              "CDSRequestProvider"
+              {
+                "impl": "CDSRequestProvider",
+                "header": "x-cds-features"
+              }
             ]
           }
         ]
@@ -103,7 +106,10 @@ you can easily implement a feature provider by yourself, read feature from `redi
 
 - [x] support redirect for bounded `action`/`function`
 - [x] support `@cds.features.required` on full entity 
-- [ ] support SAP BTP feature toggle service (as feature provider)
+- [x] built-in provider interface
+  - [x] cds request header provider
+  - [x] dummy provider for test
+- [ ] support `cds-nats` KV
 
 ## Limitation
 
