@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/Soontao/cds-feature-toggle/compare/v0.0.3...v0.0.4) (2022-06-09)
+
+
+### Bug Fixes
+
+* release pipeline ([d1fae20](https://github.com/Soontao/cds-feature-toggle/commit/d1fae209b2d02ec6b58e600895c5e6b6efbe2d6e))
+
 ### [0.0.3](https://github.com/Soontao/cds-feature-toggle/compare/v0.0.3-alpha.0...v0.0.3) (2022-06-09)
 
 
