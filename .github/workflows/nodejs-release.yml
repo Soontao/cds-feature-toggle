@@ -19,17 +19,11 @@ jobs:
           node-version: 16.x
           registry-url: https://registry.npmjs.org/
 
-      - name: npm install
-        run: |
-          npm install
-          npm i --no-save @sap/cds@5 express sqlite3
+      - run: npm ci
         env:
           CI: true
 
-      - name: npm test
-        run: npm test
-        env:
-          CI: true
+      - run: npm test
 
       - name: npm shrinkwrap
         run: npm shrinkwrap
