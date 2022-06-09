@@ -1,6 +1,6 @@
 {
   "name": "cds-feature-toggle",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "support feature toggle pattern for SAP CAP",
   "main": "lib/index.js",
   "author": {
