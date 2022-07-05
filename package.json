@@ -12,7 +12,6 @@
     "pretest": "npm run install:dev",
     "prelint": "npm run install:dev",
     "prettier": "prettier --check --write src",
-    "prebuild": "rimraf lib",
     "build": "tsc",
     "postbuild": "tsc --noEmit --p tsconfig.lib.json",
     "lint": "eslint src/** --fix",
@@ -20,26 +19,17 @@
     "coverage": "npm test -- --coverage --no-cache"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^14.1.0",
     "@types/express": "^4.17.13",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.11.39",
     "@typescript-eslint/eslint-plugin": "5.30.5",
     "@typescript-eslint/parser": "5.30.5",
-    "commitlint": "^14.1.0",
     "eslint": "^8.17.0",
     "eslint-plugin-spellcheck": "^0.0.19",
-    "husky": "~4.3.8",
     "jest": "^27.5.1",
-    "rimraf": "^3.0.2",
     "ts-jest": "^27.1.5",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.3"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
   },
   "dependencies": {
     "@newdash/newdash": "^5.21.2",
